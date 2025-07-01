@@ -1,25 +1,25 @@
-﻿@model WebApplication1.Controllers.Result;
+﻿@model WebApplication1.Controllers.Result
 
 @{
+    ViewData["Title"] = "Cifra de César";
 }
 
-<h1>CONTROLLER: Teste</h1>
-<h2>Método Index</h2>
-<h3>View Index</h3>
+<div class="text-center">
+    <h1>Cifra de César</h1>
+    <p>Insira o texto:</p>
 
-<hr />
+    <form asp-controller="Teste" asp-action="Processar" method="post">
+        <div>
+            <label for="texto">Texto:</label>
+            <input type="text" id="texto" name="texto" value="@Model.TextoEntrada" />
+        </div>
+        <button type="submit" name="acao" value="codificar">Codificar</button>
+        <button type="submit" name="acao" value="decodificar">Decodificar</button>
+    </form>
 
-<form method="post" asp-action="Index" asp-controller="Teste">
-	<input type="text" id="texto" name="texto" />
-	<input type="submit" value="Postar" />
-</form>
-
-<hr />
-
-@if(!string.IsNullOrEmpty(Model.Texto))
-{
-	<div>
-		<span>Texto convertido: </span>
-		<strong>@Model.Texto</strong>
-	</div>
-}
+    @if (!string.IsNullOrEmpty(Model.TextoSaida))
+    {
+        <h3>Resultado:</h3>
+        <p><strong>@Model.TextoSaida</strong></p>
+    }
+</div>

@@ -1,93 +1,71 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-
-
 namespace WebApplication1.Controllers
 {
-
-
     public class Result
     {
-        public string? Texto = string.Empty;
+        public string? TextoEntrada = string.Empty;
+        public string? TextoSaida = string.Empty;
     }
 
     public class TesteController : Controller
     {
-        string [] palavra;
-        string palavracodificada;
         char[] alfabeto = new char[]
         {
             'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
         };
 
-
-        private readonly ILogger<TesteController> _logger;
-
-        
-        public TesteController(
-        
-            ILogger<TesteController> logger
-        )
-        {
-            _logger = logger;
-        }
-
-        [HttpGet]
         public IActionResult Index()
         {
-
             return View("Index", new Result());
         }
 
         [HttpPost]
-        public IActionResult Index(string texto)
+        public IActionResult Processar(string texto, string acao)
         {
             Result resultado = new();
-             resultado.Texto = texto.ToUpper();
+            resultado.TextoEntrada = texto;
 
-            palavra = new string[texto.Length];
-            palavracodificada = "";
+            if (string.IsNullOrEmpty(texto))
+            {
+                return View("Index", resultado);
+            }
+
+            string textoProcessado = "";
 
             for (int i = 0; i < texto.Length; i++)
             {
-                palavra[i] = texto.Substring(i, 1);
-            }
-
-            for(int i = 0;i < palavra.Length; i++)
-            {
-                char letraOriginal = char.Parse(palavra[i]);
+                char letraOriginal = char.Parse(texto.Substring(i, 1));
+                char letraProcessada = letraOriginal; 
 
                 if (char.IsLetter(letraOriginal))
                 {
-                    
                     int posicaoOriginal = Array.IndexOf(alfabeto, char.ToLower(letraOriginal));
 
-                    
-                    int novaPosicao = (posicaoOriginal + 3) % alfabeto.Length;
-
-                    
-                    char novaLetra = alfabeto[novaPosicao];
-
-                    
-                    if (char.IsUpper(letraOriginal))
+                    if (posicaoOriginal != -1)
                     {
-                        palavracodificada += char.ToUpper(novaLetra);
-                    }
-                    else
-                    {
-                        palavracodificada += novaLetra;
+                        int novaPosicao;
+                        if (acao == "codificar")
+                        {
+                            novaPosicao = (posicaoOriginal + 3) % alfabeto.Length;
+                        }
+                        else 
+                        {
+                            novaPosicao = (posicaoOriginal - 3 + alfabeto.Length) % alfabeto.Length;
+                        }
+
+                        letraProcessada = alfabeto[novaPosicao];
+
+                        if (char.IsUpper(letraOriginal))
+                        {
+                            letraProcessada = char.ToUpper(letraProcessada);
+                        }
                     }
                 }
-                else
-                {
-                    
-                    palavracodificada += letraOriginal;
-                }
+                textoProcessado += letraProcessada;
             }
 
-            
-            resultado.Texto = palavracodificada;
-
+            resultado.TextoSaida = textoProcessado;
             return View("Index", resultado);
         }
     }
